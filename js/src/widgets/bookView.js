@@ -21,7 +21,8 @@
         zoomLevel:        null
       },
       stitchTileMargin: 10,
-      eventEmitter: null
+      eventEmitter: null,
+      vDirectionStatus: ''
     }, options);
 
     this.init();
@@ -32,6 +33,9 @@
 
     init: function() {
       var _this = this;
+      if(this.vDirectionStatus == 'rtl'){
+        this.imagesList =  this.imagesListRtl.concat();
+      }
       if (this.canvasID !== null) {
         this.currentImgIndex = $.getImageIndexById(this.imagesList, this.canvasID);
       }

@@ -13,11 +13,12 @@
       thumbInfo:            {thumbsHeight: 150, listingCssCls: 'listing-thumbs', thumbnailCls: 'thumbnail-view'},
       windowId:             null,
       panel:                false,
-      lazyLoadingFactor:    1.5  //should be >= 1
+      lazyLoadingFactor:    1.5,  //should be >= 1
+      vDirectionStatus: ''
     }, options);
-    
+
     jQuery.extend($.ScrollView.prototype, $.ThumbnailsView.prototype);
     this.init();
   };
-  
+
 }(Mirador));
