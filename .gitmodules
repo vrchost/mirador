@@ -2,3 +2,6 @@
 	path = plugins/bsb
 	url = /Users/regis/Sites/viewers/mirador/mirador-plugins
 	branch = imagecropper-translations-fr
+[submodule "plugins/mirador-jump-to-page"]
+	path = plugins/mirador-jump-to-page
+	url = /Users/regis/Sites/viewers/mirador/mirador-jump-to-page
