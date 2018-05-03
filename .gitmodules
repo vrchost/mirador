@@ -1,3 +1,4 @@
 [submodule "plugins/bsb"]
 	path = plugins/bsb
 	url = /Users/regis/Sites/viewers/mirador/mirador-plugins
+	branch = imagecropper-translations-fr
