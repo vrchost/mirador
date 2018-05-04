@@ -78,15 +78,24 @@
           return value.options.available;
         });
         renderingData.tabs = tabs;
-        if(renderingData.tabs.length === 1){
-          // TODO: temporary logic to minimize side panel if only tab is toc and toc is empty
-          if (renderingData.tabs[0].name === 'toc' && !_this.hasStructures) {
-            _this.eventEmitter.publish("sidePanelVisibilityByTab." + _this.windowId, false);
-          }
 
-          // don't show button if only one tab
-          renderingData.tabs = [];
+        // Custom fix: minimize side panel if no toc nor searchWithin service
+        if (!_this.hasStructures && !_this.hasSearchService) {
+          _this.eventEmitter.publish("sidePanelVisibilityByTab." + _this.windowId, false);
         }
+
+        // edit: this condition from original code is never fulfilled...
+        // if(renderingData.tabs.length === 1){
+        //   // TODO: temporary logic to minimize side panel if only tab is toc and toc is empty          
+        //   if (renderingData.tabs[0].name === 'toc' && !_this.hasStructures) {
+        //     _this.eventEmitter.publish("sidePanelVisibilityByTab." + _this.windowId, false);
+        //   }
+
+        //   // don't show button if only one tab
+        //   renderingData.tabs = [];
+        // }
+        // end edit
+
         //TODO: add text if there is one label or no content within this tab
         this.element = jQuery(_this.template(renderingData)).prependTo(_this.appendTo);
         return;
