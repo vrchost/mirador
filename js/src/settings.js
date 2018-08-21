@@ -80,6 +80,9 @@
             "invert" : true,
             "mirror" : false
           }
+        },
+        "canvasInfo" : {
+          "canvasInfoLayer" : true
         }
       },
       "fullScreen" : true, //whether or not to make the window's fullScreen button visible to user
