@@ -53,6 +53,51 @@
   .hud-control.hidden {
     opacity: 0;
   }
+  .mirador-canvas-metadata-controls {
+    position: absolute;
+    left: 10px;
+    bottom: 20px;
+    z-index: 5;
+    .mirador-canvas-metadata-toggle {
+      position: absolute;
+      bottom: 0;
+    }
+  }
+  .mirador-canvas-metadata {
+    font-size: 15px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: black;
+    text-shadow: none;
+    padding: 10px;
+    clear: both;
+    word-wrap: break-word;
+    overflow-y: scroll;
+    //position: relative;
+    position: absolute;
+    z-index: 2;
+    left: 45px;
+    bottom: 25px;
+    max-height: 75%;
+    max-width: 75%;
+    .metadata-value a {
+      float: none;
+      border-bottom: 1px dotted @blue-005ebd;
+    }
+    .metadata-value a:hover {
+      border-bottom: 1px dotted @gray-dd;
+    }
+  }
+  .mirador-canvas-metadata.bottom-panel-open {
+    bottom: 155px;
+  }
+  .mirador-canvas-metadata-controls.bottom-panel-open {
+    -webkit-transform : translateY(-130px);
+    -moz-transform    : translateY(-130px);
+    -ms-transform     : translateY(-130px);
+    -o-transform      : translateY(-130px);
+    transform         : translateY(-130px);
+    transition: all 0.2s ease-out;
+  }
   .mirador-osd-previous {
     position:absolute;
     left:1%;

@@ -19,13 +19,30 @@
       this.createStateMachines();
 
       var showAnno = typeof this.showAnno !== 'undefined' ? this.showAnno : this.canvasControls.annotations.annotationLayer,
-      showImageControls = typeof this.showImageControls !== 'undefined' ? this.showImageControls : this.canvasControls.imageManipulation.manipulationLayer;
+      showImageControls = typeof this.showImageControls !== 'undefined' ? this.showImageControls : this.canvasControls.imageManipulation.manipulationLayer,
+      showCanvasInfoControls = typeof this.showCanvasInfoControls !== 'undefined' ? this.showCanvasInfoControls : this.canvasControls.canvasInfo.canvasInfoLayer;
+
+      if (this.canvasInfoTplData.canvasInfo.length < 1) {
+        showCanvasInfoControls = false;
+      }
+
       this.element = jQuery(this.template({
         showNextPrev : this.showNextPrev,
         showBottomPanel : typeof this.bottomPanelAvailable === 'undefined' ? true : this.bottomPanelAvailable,
         showAnno : showAnno,
-        showImageControls : showImageControls
+        showImageControls : showImageControls,
+        showCanvasInfoControls: showCanvasInfoControls
       })).appendTo(this.appendTo);
+
+      if (showCanvasInfoControls) {
+        if (this.canvasInfoTplData.canvasInfo.length > 1) {
+          this.canvasInfoElement = jQuery(this.canvasInfoTemplate(
+            this.canvasInfoTplData
+          )).appendTo(this.element);
+          this.canvasInfoElement.hide();
+          $.ContextControls.prototype.setQtips(this.element.find('.mirador-canvas-metadata-controls'));
+        }
+      }
 
       if (showAnno || showImageControls) {
         this.contextControls = new $.ContextControls({
@@ -45,6 +62,14 @@
 
       this.listenForActions();
       this.bindEvents();
+    },
+
+    canvasInfoShow: function() {
+      this.canvasInfoElement.toggle('slide', {'direction':'down'});
+    },
+
+    canvasInfoHide: function() {
+      this.canvasInfoElement.toggle('slide', {'direction':'down'});
     },
 
     listenForActions: function() {
@@ -204,6 +229,38 @@
           }
         }
       });
+
+      this.canvasInfoState = StateMachine.create({
+        events: [
+          { name: 'startup',  from: 'none',  to: 'canvasInfoOff' },
+          { name: 'displayOn',  from: 'canvasInfoOff',  to: 'canvasInfoOn' },
+          { name: 'displayOff', from: 'canvasInfoOn', to: 'canvasInfoOff' }
+        ],
+        callbacks: {
+          onstartup: function(event, from, to) {
+            _this.eventEmitter.publish(('windowUpdated'), {
+              id: _this.windowId,
+              canvasInfoState: to
+            });
+          },
+          ondisplayOn: function(event, from, to) {
+            _this.eventEmitter.publish('HUD_ADD_CLASS.'+_this.windowId, ['.mirador-canvas-metadata-toggle', 'selected']);
+            _this.canvasInfoShow();
+            _this.eventEmitter.publish(('windowUpdated'), {
+              id: _this.windowId,
+              canvasInfoState: to
+            });
+          },
+          ondisplayOff: function(event, from, to) {
+            _this.canvasInfoHide();
+            _this.eventEmitter.publish('HUD_REMOVE_CLASS.'+_this.windowId, ['.mirador-canvas-metadata-toggle', 'selected']);
+            _this.eventEmitter.publish(('windowUpdated'), {
+              id: _this.windowId,
+              canvasInfoState: to
+            });
+          }
+        }
+      });
     },
 
     template: $.Handlebars.compile([
@@ -229,6 +286,13 @@
                                   '</div>',
                                  '{{/if}}',
                                  '</div>',
+                                 '{{#if showCanvasInfoControls}}',
+                                  '<div class="mirador-canvas-metadata-controls">',
+                                  '<a class="mirador-canvas-metadata-toggle hud-control" role="button" title="{{t "canvasMetadataTooltip"}}" aria-label="{{t "canvasMetadataTooltip"}}">',
+                                  '<i class="material-icons">info</i>',
+                                  '</a>',
+                                  '</div>',
+                                 '{{/if}}',
                                  '{{#if showNextPrev}}',
                                  '<a class="mirador-osd-next hud-control ">',
                                  '<i class="fa fa-3x fa-chevron-right"></i>',
@@ -263,7 +327,15 @@
                                  '</a>',
                                  '</div>',
                                  '</div>'
-    ].join(''))
+    ].join('')),
+
+    canvasInfoTemplate: $.Handlebars.compile([
+      '<div class="mirador-canvas-metadata">',
+        '{{#each canvasInfo}}',
+          '<div class="metadata-item"><div class="metadata-label">{{label}}:</div><div class="metadata-value">{{{value}}}</div></div>',
+        '{{/each}}',
+      '</div>'
+    ].join('')),
 
   };
 

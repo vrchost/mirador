@@ -52,11 +52,16 @@
         };
       }
       this.currentImg = this.imagesList[this.currentImgIndex];
+
+      // Handle canvas metadata
+      var canvasInfoTplData = {};
+      this.metadataTypes = {};
+      this.metadataTypes.canvasInfo = this.getMetadataDetails(_this.currentImg);
+
       this.element = jQuery(this.template()).appendTo(this.appendTo);
       this.elemAnno = jQuery('<div/>')
         .addClass(this.annoCls)
         .appendTo(this.element);
-
 
       _this.eventEmitter.publish('UPDATE_FOCUS_IMAGES.' + this.windowId, {array: [this.canvasID]});
 
@@ -85,7 +90,8 @@
         availableAnnotationStylePickers: this.state.getStateProperty('availableAnnotationStylePickers'),
         availableAnnotationTools: this.availableAnnotationTools,
         state: this.state,
-        eventEmitter: this.eventEmitter
+        eventEmitter: this.eventEmitter,
+        canvasInfoTplData: this.buildCanvasMetadata( this.metadataTypes, canvasInfoTplData )
       });
 
       this.initialiseImageCanvas();
@@ -105,11 +111,54 @@
 
     ].join('')),
 
+    buildCanvasMetadata: function( metadataTypes, tplData ){
+      jQuery.each(metadataTypes, function(metadataKey, metadataValues) {
+        tplData[metadataKey] = [];
+
+        jQuery.each(metadataValues, function(idx, itm) {
+          if (typeof itm.value === 'object') {
+            itm.value = $.MetadataView.prototype.stringifyObject(itm.value);
+          }
+
+          if (typeof itm.value === 'string' && itm.value !== '') {
+            tplData[metadataKey].push({
+              identifier: itm.identifier || '',
+              label: $.MetadataView.prototype.extractLabelFromAttribute(itm.label),
+              value: (metadataKey === 'links') ? itm.value : $.MetadataView.prototype.addLinksToUris(itm.value)
+            });
+          }
+        });
+      });
+      return tplData;
+    },
+
+    getMetadataDetails: function(jsonLd) {
+      var mdList = [
+        // do not treat the label as metadata
+        /*{ label: i18next.t('label'),
+          value: '<b>' + ($.JsonLd.getTextValue(jsonLd.label) || '') + '</b>' },*/
+        { label: i18next.t('description'),
+          value: $.JsonLd.getTextValue(jsonLd.description) || '' }
+      ];
+
+      if (jsonLd.metadata) {
+        value = "";
+        label = "";
+        jQuery.each(jsonLd.metadata, function(index, item) {
+          label = $.JsonLd.getTextValue(item.label);
+          value = $.JsonLd.getTextValue(item.value);
+          mdList.push({label: label, value: value});
+        });
+      }
+
+      return mdList;
+    },
+
     listenForActions: function() {
       var _this = this;
 
       _this.eventEmitter.subscribe('bottomPanelSet.' + _this.windowId, function(event, visible) {
-        var dodgers = _this.element.find('.mirador-osd-toggle-bottom-panel, .mirador-pan-zoom-controls');
+        var dodgers = _this.element.find('.mirador-osd-toggle-bottom-panel, .mirador-pan-zoom-controls, .mirador-canvas-metadata-controls, .mirador-canvas-metadata');
         var arrows = _this.element.find('.mirador-osd-next, .mirador-osd-previous');
         if (visible === true) {
           dodgers.addClass('bottom-panel-open');
@@ -201,6 +250,17 @@
           _this.hud.manipulationState.displayOn(this);
         } else {
           _this.hud.manipulationState.displayOff(this);
+        }
+      });
+
+      this.element.find('.mirador-canvas-metadata-toggle').on('click', function() {
+        if (_this.hud.canvasInfoState.current === 'none') {
+          _this.hud.canvasInfoState.startup(this);
+        }
+        if (_this.hud.canvasInfoState.current === 'canvasInfoOff') {
+          _this.hud.canvasInfoState.displayOn(this);
+        } else {
+          _this.hud.canvasInfoState.displayOff(this);
         }
       });
 
@@ -790,6 +850,44 @@
       });
     },
 
+    updateCanvasInfo: function(currentImg) {
+      var _this = this;
+
+      _this.hud.element.find('.mirador-canvas-metadata-controls').show();
+
+      // Handle canvas metadata
+      var canvasInfoTplData = {};
+      _this.metadataTypes = {};
+      _this.metadataTypes.canvasInfo = _this.getMetadataDetails(currentImg);
+      _this.hud.canvasInfoTplData = _this.buildCanvasMetadata( _this.metadataTypes, canvasInfoTplData );
+
+      _this.hud.element.find('.mirador-canvas-metadata').remove();
+      if (_this.hud.canvasControls.canvasInfo.canvasInfoLayer) {
+        if (_this.hud.canvasInfoTplData.canvasInfo.length > 1) {
+          _this.hud.canvasInfoElement = jQuery(_this.hud.canvasInfoTemplate(
+            _this.hud.canvasInfoTplData
+          )).appendTo(_this.hud.element);
+          if (_this.hud.canvasInfoState.current === 'canvasInfoOff' || _this.hud.canvasInfoState.current === 'none') {
+            _this.hud.canvasInfoElement.hide();
+          }
+        } else {
+          _this.hud.element.find('.mirador-canvas-metadata-controls').hide();
+        }
+      }
+
+      if (_this.state.getStateProperty('windowObjects')) {
+        _this.state.getStateProperty('windowObjects').forEach(function(windowConfig, index) {
+          if ( windowConfig.id == _this.windowId ) {
+            if (windowConfig.bottomPanelVisible === true) {
+              _this.hud.element.find('.mirador-canvas-metadata').addClass('bottom-panel-open');
+            } else {
+            _this.hud.element.find('.mirador-canvas-metadata').removeClass('bottom-panel-open');
+            }
+          }
+        });
+      }
+    },
+
     updateImage: function(canvasID) {
       var _this = this;
       if (this.canvasID !== canvasID) {
@@ -799,6 +897,8 @@
         this.canvasID = canvasID;
         this.currentImgIndex = $.getImageIndexById(this.imagesList, canvasID);
         this.currentImg = this.imagesList[this.currentImgIndex];
+
+        _this.updateCanvasInfo(this.currentImg);
 
         var newCanvas = this.canvases[_this.canvasID];
         var canvasBounds = newCanvas.getBounds();

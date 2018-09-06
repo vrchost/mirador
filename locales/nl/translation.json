@@ -35,5 +35,6 @@
     "fullScreen": "Volledig scherm",
     "logo": "Logo",
     "load": "Opladen",
-    "dropToLoad": "Vallen hier om object te laden"
+    "dropToLoad": "Vallen hier om object te laden",
+    "canvasMetadataTooltip" : "Informatie over deze afbeelding",
 }
