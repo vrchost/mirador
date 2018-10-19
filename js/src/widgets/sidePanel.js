@@ -11,6 +11,7 @@
       layersTabAvailable: false,
       searchTabAvailable: null,
       hasStructures:     false,
+      hasSearchService:  false,
       state:             null,
       eventEmitter:      null
     }, options);
@@ -75,6 +76,7 @@
         appendTo: this.appendTo,
         tabs : this.panelState.tabs,
         hasStructures : this.hasStructures,
+        hasSearchService: this.hasSearchService,
         eventEmitter: this.eventEmitter
       });
 

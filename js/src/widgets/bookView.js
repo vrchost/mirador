@@ -59,7 +59,8 @@
         showNextPrev : this.imagesList.length !== 1,
         eventEmitter: this.eventEmitter,
         showAnno: false,
-        showImageControls: false
+        showImageControls: false,
+        showCanvasInfoControls: false
       });
 
       if (this.manifest.jsonLd.sequences[0].viewingDirection) {

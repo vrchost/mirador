@@ -589,10 +589,16 @@
           layersTabAvailable = _this.sidePanelOptions.layersTabAvailable,
           searchTabAvailable = _this.sidePanelOptions.searchTabAvailable,
           hasStructures = true;
+          hasSearchService = true;
 
       var structures = _this.manifest.getStructures();
       if (!structures || structures.length === 0) {
         hasStructures = false;
+      }
+
+      var searchService = _this.manifest.getSearchWithinService();
+      if (!searchService || searchService.length === 0) {
+        hasSearchService = false;
       }
 
       if (this.sidePanel === null) {
@@ -609,8 +615,8 @@
           tocTabAvailable: tocTabAvailable,
           searchTabAvailable: searchTabAvailable,
           annotationsTabAvailable: annotationsTabAvailable,
-          hasStructures: hasStructures
-
+          hasStructures: hasStructures,
+          hasSearchService: hasSearchService
         });
       } else {
         this.sidePanel.update('annotations', annotationsTabAvailable);
