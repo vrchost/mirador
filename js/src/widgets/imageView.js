@@ -635,6 +635,20 @@
         }
       });
     },
+    setOpacityById: function (tiledImage, opacity) {
+      // set opacity on given tiledImage and also on all world items
+      // with the same ID, since tiledImage may be a different
+      // instance of what is in the world
+      tiledImage.setOpacity(opacity);
+      var id = tiledImage.source['@id'];
+      var items = this.osd.world._items;
+      for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        if (item.source['@id'] === id) {
+          item.setOpacity(opacity);
+        }
+      }
+    },
     showImage: function(event, imageResource) {
       // Check whether or not this item has been drawn.
       // This implies that the request has been issued already
@@ -647,7 +661,7 @@
     },
     hideImage: function(event, imageResource) {
       if (imageResource.getStatus() === 'drawn') {
-        imageResource.osdTiledImage.setOpacity(0);
+        this.setOpacityById(imageResource.osdTiledImage, 0);
       } else {
         imageResource._initialOpacity = 0;
       }
@@ -656,7 +670,7 @@
     },
     updateImageOpacity: function(event, imageResource) {
       if(imageResource.osdTiledImage) {
-        imageResource.osdTiledImage.setOpacity(imageResource.opacity * imageResource.parent.getOpacity());
+        this.setOpacityById(imageResource.osdTiledImage, imageResource.opacity * imageResource.parent.getOpacity());
       }
     },
     syncAllImageResourceProperties: function(imageResource) {
