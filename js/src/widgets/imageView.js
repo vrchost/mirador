@@ -912,12 +912,23 @@
       }
     },
 
+    hideAllOsdTiledImages: function () {
+      var items = this.osd.world._items;
+      for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        if (item.opacity > 0) {
+          item.setOpacity(0);
+        }
+      }
+    },
+
     updateImage: function(canvasID) {
       var _this = this;
       if (this.canvasID !== canvasID) {
         this.canvases[_this.canvasID].getVisibleImages().forEach(function(imageResource){
           imageResource.hide();
         });
+        this.hideAllOsdTiledImages();
         this.canvasID = canvasID;
         this.currentImgIndex = $.getImageIndexById(this.imagesList, canvasID);
         this.currentImg = this.imagesList[this.currentImgIndex];
