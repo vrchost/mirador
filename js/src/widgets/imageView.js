@@ -887,7 +887,7 @@
 
       _this.hud.element.find('.mirador-canvas-metadata').remove();
       if (_this.hud.canvasControls.canvasInfo.canvasInfoLayer) {
-        if (_this.hud.canvasInfoTplData.canvasInfo.length > 1) {
+        if (_this.hud.canvasInfoTplData.canvasInfo.length >= 1) {
           _this.hud.canvasInfoElement = jQuery(_this.hud.canvasInfoTemplate(
             _this.hud.canvasInfoTplData
           )).appendTo(_this.hud.element);

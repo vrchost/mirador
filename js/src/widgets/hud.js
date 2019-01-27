@@ -35,7 +35,7 @@
       })).appendTo(this.appendTo);
 
       if (showCanvasInfoControls) {
-        if (this.canvasInfoTplData.canvasInfo.length > 1) {
+        if (this.canvasInfoTplData.canvasInfo.length >= 1) {
           this.canvasInfoElement = jQuery(this.canvasInfoTemplate(
             this.canvasInfoTplData
           )).appendTo(this.element);
