@@ -332,7 +332,7 @@
     canvasInfoTemplate: $.Handlebars.compile([
       '<div class="mirador-canvas-metadata">',
         '{{#each canvasInfo}}',
-          '<div class="metadata-item"><div class="metadata-label">{{label}}:</div><div class="metadata-value">{{{value}}}</div></div>',
+          '<div class="metadata-item"><div class="metadata-label">{{{label}}}:</div><div class="metadata-value">{{{value}}}</div></div>',
         '{{/each}}',
       '</div>'
     ].join('')),
