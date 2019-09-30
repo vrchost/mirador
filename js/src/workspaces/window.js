@@ -312,6 +312,18 @@
           index: index,
           dispatcher: canvasEmitter // Each canvas gets its own emitter
         });
+
+        // For untiled images, the tileSource must have an @id set to be able
+        // to uniquely turn on and off images when navigating.  This is not
+        // done in the factory, so patch it here.
+        eventedCanvas.images.map(function (i) {
+            if (i.tileSource && i.tileSource.type === 'image' &&
+                    !i.tileSource['@id']) {
+                i.tileSource['@id'] = i.id;
+            }
+        });
+        // end patch
+
         canvasesIndex[canvas['@id']] = eventedCanvas;
         return canvasesIndex;
       }, {});
