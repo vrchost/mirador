@@ -653,8 +653,12 @@
       // Check whether or not this item has been drawn.
       // This implies that the request has been issued already
       // and the opacity can be updated.
-      if (imageResource.getStatus() === 'drawn') {
+      var status = imageResource.getStatus();
+      if (status === 'drawn') {
         this.updateImageOpacity(null, imageResource);
+      } else if (status === 'loaded') {
+        this.updateImageOpacity(null, imageResource);
+        imageResource._initialOpacity = null;
       } else {
         imageResource._initialOpacity = null;
       }
